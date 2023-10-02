@@ -1,11 +1,11 @@
-
 --remaps
 
 --leader commands
 vim.g.mapleader = " "
 vim.keymap.set("n", "<leader>b", vim.cmd.Ex) 
-vim.keymap.set("n", "<leader>te", vim.cmd.Tex)
+vim.keymap.set("n", "<leader>t", vim.cmd.Tex)
 vim.keymap.set("n", "<leader>q", vim.cmd.quit)
+vim.keymap.set("n", "<leader>w", vim.cmd.write)
 
 --numbers
 vim.opt.nu = true
@@ -23,6 +23,8 @@ vim.opt.smartindent = true
 --swapfile
 vim.opt.swapfile = false
 
+--scroll
+vim.opt.scroll = 10
 
 --plugins
 
@@ -36,6 +38,7 @@ vim.keymap.set('n', '<leader>fe', builtin.git_files, {})
 --colours
 
 --vs code colours
+
 local c = require('vscode.colors').get_colors()
 require('vscode').setup({
     style = 'dark',
@@ -162,3 +165,39 @@ if client.name == "omnisharp" then
 end)
 
 lsp.setup()
+
+-- Make sure you setup `cmp` after lsp-zero
+
+local cmp = require('cmp')
+local cmp_action = require('lsp-zero').cmp_action()
+
+require('luasnip.loaders.from_vscode').lazy_load()
+
+cmp.setup({
+  sources = {
+    {name = 'nvim_lsp'},
+    {name = 'luasnip'},
+  },
+  mapping = {
+    ['<C-f>'] = cmp_action.luasnip_jump_forward(),
+    ['<C-b>'] = cmp_action.luasnip_jump_backward(),
+    ['<CR>'] = cmp.mapping.confirm({select = false}),
+    ['<Shift-Tab>'] = cmp.mapping.select_prev_item(cmp_select_opts),
+    ['<Tab>'] = cmp.mapping.select_next_item(cmp_select_opts),
+  },
+  preselect = 'item',
+  completion = {
+    completeopt = 'menu,menuone,noinsert'
+  },
+})
+
+--remaps
+vim.keymap.set("i", "\"", "\"\"<Left>") 
+vim.keymap.set("i", "(", "()<Left>") 
+vim.keymap.set("i", "()", "()")
+vim.keymap.set("i", ";'", "<Right><Right><Right><Right><Right>;")
+vim.keymap.set("i", "{{", "<Esc>o{<CR>}<Esc>O")
+--horizontal movement in insert mode
+vim.keymap.set("i", "<C-l>", "<Right>")
+vim.keymap.set("i", "<C-h>", "<Left>")
+
