@@ -200,4 +200,8 @@ vim.keymap.set("i", "{{", "<Esc>o{<CR>}<Esc>O")
 --horizontal movement in insert mode
 vim.keymap.set("i", "<C-l>", "<Right>")
 vim.keymap.set("i", "<C-h>", "<Left>")
+--swap tabs
+vim.keymap.set("n", "<C-l>", "gt")
+vim.keymap.set("n", "<C-h>", "gT")
+
 
