@@ -26,6 +26,8 @@ vim.opt.swapfile = false
 --scroll
 vim.opt.scroll = 10
 
+vim.opt.wrap = false
+
 --plugins
 
 --telescope
