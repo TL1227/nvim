@@ -1,209 +1,107 @@
---remaps
-
---leader commands
 vim.g.mapleader = " "
-vim.keymap.set("n", "<leader>b", vim.cmd.Ex) 
-vim.keymap.set("n", "<leader>t", vim.cmd.Tex)
-vim.keymap.set("n", "<leader>q", vim.cmd.quit)
-vim.keymap.set("n", "<leader>w", vim.cmd.write)
 
---numbers
-vim.opt.nu = true
-vim.opt.relativenumber = true
+--check the directory for a .noplug file
+local function checkForNoPlug()
+    for file in io.popen([[dir /b]]):lines()
+    do
+        if file == ".noplug" then
+            require("plugless")
+            vim.cmd("color retrobox")
+            return
+        end
+    end
 
---tabs
-vim.opt.tabstop = 4
-vim.opt.softtabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.expandtab = true
+    require("config.lazy")
+    vim.cmd("color vscode")
+end
 
---indent
-vim.opt.smartindent = true
+checkForNoPlug()
 
---swapfile
-vim.opt.swapfile = false
-
---scroll
-vim.opt.scroll = 10
-
-vim.opt.wrap = false
-
---plugins
-
---telescope
-local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
-vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
-vim.keymap.set('n', '<leader>fe', builtin.git_files, {})
-
-
---colours
-
---vs code colours
-
-local c = require('vscode.colors').get_colors()
-require('vscode').setup({
-    style = 'dark',
-
-    -- Enable transparent background
-    transparent = true,
-
-    -- Enable italic comment
-    italic_comments = true,
-
-    -- Disable nvim-tree background color
-    disable_nvimtree_bg = true,
-})
-require('vscode').load()
-
-
---treesitter
-require'nvim-treesitter.configs'.setup {
-  -- A list of parser names, or "all" (the five listed parsers should always be installed)
-  ensure_installed = { "c","c_sharp", "cpp", "gdscript", "lua", "vim", "vimdoc", "query" },
-
-  -- Install parsers synchronously (only applied to `ensure_installed`)
-  sync_install = false,
-
-  -- Automatically install missing parsers when entering buffer
-  -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
-  auto_install = true,
-
-  highlight = {
-    enable = true,
-
-    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-    -- Using this option may slow down your editor, and you may see some duplicate highlights.
-    -- Instead of true it can also be a list of languages
-    additional_vim_regex_highlighting = false,
-  },
-}
-
-
---LSP
-local lsp = require('lsp-zero').preset({})
-
-lsp.on_attach(function(client, bufnr)
-  lsp.default_keymaps({buffer = bufnr})
-
-if client.name == "omnisharp" then
-    client.server_capabilities.semanticTokensProvider = {
-      full = vim.empty_dict(),
-      legend = {
-        tokenModifiers = { "static_symbol" },
-        tokenTypes = {
-          "comment",
-          "excluded_code",
-          "identifier",
-          "keyword",
-          "keyword_control",
-          "number",
-          "operator",
-          "operator_overloaded",
-          "preprocessor_keyword",
-          "string",
-          "whitespace",
-          "text",
-          "static_symbol",
-          "preprocessor_text",
-          "punctuation",
-          "string_verbatim",
-          "string_escape_character",
-          "class_name",
-          "delegate_name",
-          "enum_name",
-          "interface_name",
-          "module_name",
-          "struct_name",
-          "type_parameter_name",
-          "field_name",
-          "enum_member_name",
-          "constant_name",
-          "local_name",
-          "parameter_name",
-          "method_name",
-          "extension_method_name",
-          "property_name",
-          "event_name",
-          "namespace_name",
-          "label_name",
-          "xml_doc_comment_attribute_name",
-          "xml_doc_comment_attribute_quotes",
-          "xml_doc_comment_attribute_value",
-          "xml_doc_comment_cdata_section",
-          "xml_doc_comment_comment",
-          "xml_doc_comment_delimiter",
-          "xml_doc_comment_entity_reference",
-          "xml_doc_comment_name",
-          "xml_doc_comment_processing_instruction",
-          "xml_doc_comment_text",
-          "xml_literal_attribute_name",
-          "xml_literal_attribute_quotes",
-          "xml_literal_attribute_value",
-          "xml_literal_cdata_section",
-          "xml_literal_comment",
-          "xml_literal_delimiter",
-          "xml_literal_embedded_expression",
-          "xml_literal_entity_reference",
-          "xml_literal_name",
-          "xml_literal_processing_instruction",
-          "xml_literal_text",
-          "regex_comment",
-          "regex_character_class",
-          "regex_anchor",
-          "regex_quantifier",
-          "regex_grouping",
-          "regex_alternation",
-          "regex_text",
-          "regex_self_escaped_character",
-          "regex_other_escape",
-        },
-      },
-      range = true,
-    }
-  end
-
-end)
-
-lsp.setup()
-
--- Make sure you setup `cmp` after lsp-zero
-
-local cmp = require('cmp')
-local cmp_action = require('lsp-zero').cmp_action()
-
-require('luasnip.loaders.from_vscode').lazy_load()
-
-cmp.setup({
-  sources = {
-    {name = 'nvim_lsp'},
-    {name = 'luasnip'},
-  },
-  mapping = {
-    ['<C-f>'] = cmp_action.luasnip_jump_forward(),
-    ['<C-b>'] = cmp_action.luasnip_jump_backward(),
-    ['<CR>'] = cmp.mapping.confirm({select = false}),
-    ['<Shift-Tab>'] = cmp.mapping.select_prev_item(cmp_select_opts),
-    ['<Tab>'] = cmp.mapping.select_next_item(cmp_select_opts),
-  },
-  preselect = 'item',
-  completion = {
-    completeopt = 'menu,menuone,noinsert'
-  },
-})
+require("options")
+require("terminal")
 
 --remaps
-vim.keymap.set("i", "\"", "\"\"<Left>") 
-vim.keymap.set("i", "(", "()<Left>") 
-vim.keymap.set("i", "()", "()")
+vim.keymap.set("n", "<leader><tab>", ":ls<cr>:b ")
+vim.keymap.set("n", "<leader>b", vim.cmd.Ex)
+vim.keymap.set("n", "<leader>q", vim.cmd.quit)
+vim.keymap.set("n", "<leader>v", "<C-w>v<c-w>l")
+vim.keymap.set("n", "<leader>w", ":wa<CR>")
+vim.keymap.set("n", "<leader>e", ":e<CR>")
+vim.keymap.set("n", "<leader>cd", ":e $MYVIMRC<cr>")
+vim.keymap.set("n", "-", ":Ex<cr>")
+
+--search for files
+vim.keymap.set("n", "<leader>ff", ":edit **/*<left>")
+vim.keymap.set("n", "<leader>fp", ":find **/Program.cs<cr>")
+vim.keymap.set("n", "<c-f>", ":vimgrep // **/*<left><left><left><left><left><left>")
+
+--quickfix navigation
+vim.keymap.set("n", "]q", ":cn<CR>")
+vim.keymap.set("n", "[q", ":cp<CR>")
+
+--buffer navigation
+vim.keymap.set("n", "]b", ":bn<CR>")
+vim.keymap.set("n", "[b", ":bp<CR>")
+
+--split pane navigation
+vim.keymap.set("n", "<C-h>", "<C-w>h")
+vim.keymap.set("n", "<C-l>", "<C-w>l")
+vim.keymap.set("n", "<C-k>", "<C-w>k")
+vim.keymap.set("n", "<C-j>", "<C-w>j")
+
+--double tap for different behavior
 vim.keymap.set("i", ";'", "<Right><Right><Right><Right><Right>;")
-vim.keymap.set("i", "{{", "<Esc>o{<CR>}<Esc>O")
---horizontal movement in insert mode
-vim.keymap.set("i", "<C-l>", "<Right>")
-vim.keymap.set("i", "<C-h>", "<Left>")
---swap tabs
-vim.keymap.set("n", "<C-l>", "gt")
-vim.keymap.set("n", "<C-h>", "gT")
+vim.keymap.set("i", "{{", "<Esc>A<cr>{<cr>}<Esc>O")
+vim.keymap.set("n", "<leader>cc", ":cclose<cr>")
 
+--abbreviations
+vim.cmd [[
+func Eatchar(pat)
+    let c = nr2char(getchar(0))
+    return (c =~ a:pat) ? '' : c
+endfunc
+]]
 
+vim.cmd([[iab fr for (int i = 0; i <; i++)<esc>F;i]])
+vim.cmd([[iab fe foreach (var item in items)<esc>Frl]])
+vim.cmd([[iab iff if ()<left><c-r>=Eatchar('\s')<cr>]])
+
+--autocmd
+
+--C#
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "cs" },
+    callback = function()
+        vim.keymap.set("n", "<leader>b", ":hor term dotnet build<cr>", { buffer = true })
+        vim.keymap.set("n", "<leader>r", ":hor term dotnet run<cr>", { buffer = true })
+
+        vim.cmd([[iab <buffer> cw Console.WriteLine();<left><left><c-r>=Eatchar('\s')<cr>]])
+        vim.cmd([[iab <buffer> prop public  { get; set; }<esc>F{i<left><c-r>=Eatchar('\s')<cr>]])
+    end
+})
+
+--C++
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "cpp", "h" },
+    callback = function()
+        vim.keymap.set("n", "<leader>b", ":hor term ./build.bat<cr>", { buffer = true })
+        vim.keymap.set("n", "<leader>r", ":hor term ./a.exe<cr>", { buffer = true })
+    end
+})
+
+--Lsp Attach
+vim.api.nvim_create_autocmd("LspAttach", {
+    callback = function(event)
+        local opts = { buffer = event.buf }
+        vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
+        vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
+        vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
+        vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
+        vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
+        vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
+        vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
+        vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
+        vim.keymap.set({ 'n', 'x' }, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
+        vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
+    end
+})
