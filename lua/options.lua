@@ -18,8 +18,10 @@ vim.opt.smartcase = true
 --misc
 vim.opt.wrap = false
 vim.opt.swapfile = false
-vim.opt.scroll = 10
+--vim.opt.scroll = 10
 vim.opt.signcolumn = "yes"
+vim.opt.splitright = true
+vim.opt.fillchars = "eob: "
 
 --color
 vim.opt.termguicolors = true
@@ -27,10 +29,9 @@ vim.opt.termguicolors = true
 --wildmenu
 vim.opt.wildignore = {
     --directory
-    "obj/*",
-    "bin/*",
     "*/obj/*",
     "*/bin/*",
+    "*/debug/*",
 
     --files
     "*.exe",

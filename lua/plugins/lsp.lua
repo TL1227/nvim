@@ -3,7 +3,7 @@ return {
         'neovim/nvim-lspconfig',
         config = function()
             require("lspconfig").clangd.setup {
-                cmd = { "clangd.cmd" }
+                cmd = { "clangd.cmd", "--compile-commands-dir=." }
             }
 
             require("lspconfig").lua_ls.setup {

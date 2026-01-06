@@ -1,34 +1,18 @@
 vim.g.mapleader = " "
 
---check the directory for a .noplug file
-local function checkForNoPlug()
-    for file in io.popen([[dir /b]]):lines()
-    do
-        if file == ".noplug" then
-            require("plugless")
-            vim.cmd("color retrobox")
-            return
-        end
-    end
-
-    require("config.lazy")
-    vim.cmd("color vscode")
-end
-
-checkForNoPlug()
-
 require("options")
 require("terminal")
 
 --remaps
-vim.keymap.set("n", "<leader><tab>", ":ls<cr>:b ")
 vim.keymap.set("n", "<leader>b", vim.cmd.Ex)
 vim.keymap.set("n", "<leader>q", vim.cmd.quit)
-vim.keymap.set("n", "<leader>v", "<C-w>v<c-w>l")
+vim.keymap.set("n", "<leader>v", ":vsplit<cr>")
 vim.keymap.set("n", "<leader>w", ":wa<CR>")
 vim.keymap.set("n", "<leader>e", ":e<CR>")
 vim.keymap.set("n", "<leader>cd", ":e $MYVIMRC<cr>")
+vim.keymap.set("n", "<leader><tab>", ":ls<cr>:b ")
 vim.keymap.set("n", "-", ":Ex<cr>")
+vim.keymap.set("n", "<esc>", ":noh<cr>", { silent = true })
 
 --search for files
 vim.keymap.set("n", "<leader>ff", ":edit **/*<left>")
@@ -36,8 +20,8 @@ vim.keymap.set("n", "<leader>fp", ":find **/Program.cs<cr>")
 vim.keymap.set("n", "<c-f>", ":vimgrep // **/*<left><left><left><left><left><left>")
 
 --quickfix navigation
-vim.keymap.set("n", "]q", ":cn<CR>")
-vim.keymap.set("n", "[q", ":cp<CR>")
+vim.keymap.set("n", "]q", ":cn<CR>zz")
+vim.keymap.set("n", "[q", ":cp<CR>zz")
 
 --buffer navigation
 vim.keymap.set("n", "]b", ":bn<CR>")
@@ -66,32 +50,14 @@ vim.cmd([[iab fr for (int i = 0; i <; i++)<esc>F;i]])
 vim.cmd([[iab fe foreach (var item in items)<esc>Frl]])
 vim.cmd([[iab iff if ()<left><c-r>=Eatchar('\s')<cr>]])
 
---autocmd
-
---C#
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "cs" },
-    callback = function()
-        vim.keymap.set("n", "<leader>b", ":hor term dotnet build<cr>", { buffer = true })
-        vim.keymap.set("n", "<leader>r", ":hor term dotnet run<cr>", { buffer = true })
-
-        vim.cmd([[iab <buffer> cw Console.WriteLine();<left><left><c-r>=Eatchar('\s')<cr>]])
-        vim.cmd([[iab <buffer> prop public  { get; set; }<esc>F{i<left><c-r>=Eatchar('\s')<cr>]])
-    end
-})
-
---C++
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "cpp", "h" },
-    callback = function()
-        vim.keymap.set("n", "<leader>b", ":hor term ./build.bat<cr>", { buffer = true })
-        vim.keymap.set("n", "<leader>r", ":hor term ./a.exe<cr>", { buffer = true })
-    end
-})
-
 --Lsp Attach
 vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(event)
+
+        --disables lsp highlights
+        --local client = vim.lsp.get_client_by_id(event.data.client_id)
+        --client.server_capabilities.semanticTokensProvider = nil
+
         local opts = { buffer = event.buf }
         vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
         vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
@@ -105,3 +71,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
         vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
     end
 })
+
+require("project")
+vim.keymap.set("n", "gf", ":vimgrep /[^ =] <c-r><c-w>(/ */*<cr>ll", { buffer = true }) --go to function
