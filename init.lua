@@ -3,7 +3,6 @@ vim.g.mapleader = " "
 require("options")
 require("terminal")
 
-
 --remaps
 vim.keymap.set("n", "<leader>b", vim.cmd.Ex)
 vim.keymap.set("n", "<leader>q", vim.cmd.quit)
