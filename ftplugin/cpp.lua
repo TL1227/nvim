@@ -1,10 +1,10 @@
 local function Hswitch ()
     local file = vim.fn.expand("%")
 
-    if string.match(file, ".cpp") then
-        file = file:gsub(".cpp", ".h")
-    elseif string.match(file, ".h") then
-        file = file:gsub(".h", ".cpp")
+    if string.match(file, "%.cpp") then
+        file = file:gsub("%.cpp", "%.h")
+    elseif string.match(file, "%.h") then
+        file = file:gsub("%.h", "%.cpp")
     else
         return
     end

@@ -3,6 +3,7 @@ vim.g.mapleader = " "
 require("options")
 require("terminal")
 
+
 --remaps
 vim.keymap.set("n", "<leader>b", vim.cmd.Ex)
 vim.keymap.set("n", "<leader>q", vim.cmd.quit)
@@ -72,5 +73,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end
 })
 
-require("project")
 vim.keymap.set("n", "gf", ":vimgrep /[^ =] <c-r><c-w>(/ */*<cr>ll", { buffer = true }) --go to function
+
+--read in local config file
+local readable = vim.fn.filereadable("vimconf.lua")
+if readable == 1 then
+    require("vimconf")
+else
+    --TODO put these in a defaults.lua?
+    require("config.lazy")
+    vim.cmd("color vscode")
+end
